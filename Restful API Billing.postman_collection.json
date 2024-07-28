@@ -1,0 +1,146 @@
+{
+	"info": {
+		"_postman_id": "2160d5bd-591d-4427-8d32-2bde9b2008e0",
+		"name": "Restful API Billing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34872236"
+	},
+	"item": [
+		{
+			"name": "http://127.0.0.1:5000/billing/api/v1/bi",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "887c89ccdc5fc85472748f47a591ee88",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"bill_number\": \"12345\",\r\n  \"reference_number\": \"67890\",\r\n  \"service_code\": \"155\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/billing/api/v1/bi",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"billing",
+						"api",
+						"v1",
+						"bi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/billing/api/v1/bp",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "887c89ccdc5fc85472748f47a591ee88",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"bill_number\": \"12345\",\r\n  \"reference_number\": \"67890\",\r\n  \"service_code\": \"155\",\r\n  \"paid_amount\": 100.50,\r\n  \"process_date\": 1625140800,\r\n  \"payment_type\": \"F\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/billing/api/v1/bp",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"billing",
+						"api",
+						"v1",
+						"bp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/billing/api/v1/bi/response",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "887c89ccdc5fc85472748f47a591ee88",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"bill_inquiry_id\": 1,\r\n  \"response_code\": \"200\",\r\n  \"response_message\": \"Bill inquiry processed successfully.\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/billing/api/v1/bi/response",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"billing",
+						"api",
+						"v1",
+						"bi",
+						"response"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
