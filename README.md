@@ -17,7 +17,7 @@ This project provides RESTful APIs for handling bill inquiries, bill payments, a
 
 1. Clone the repository:
 ~~~bash
-    git clone https://github.com/yourusername/billing-api.git
+    git clone https://github.com/AhmadTNofal/billingAPI.git
     cd billing-api
 ~~~
 
