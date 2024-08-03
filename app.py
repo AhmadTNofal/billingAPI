@@ -1,11 +1,19 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 import mysql.connector
 import os
 from dotenv import load_dotenv
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from datetime import timedelta
+from passlib.hash import pbkdf2_sha256 as sha256
 
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
+
+jwt = JWTManager(app)
 
 # Database connection setup
 def get_db_connection():
@@ -16,21 +24,60 @@ def get_db_connection():
         password=os.getenv('DB_PASSWORD')
     )
 
-# Validate API Key
-def validate_api_key(api_key):
-    return api_key == os.getenv('API_ACCESS_KEY')
+# Log request and response
+def log_request_response(endpoint, method, status_code, request_body, response_body):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO logs (endpoint, method, status_code, request_body, response_body) VALUES (%s, %s, %s, %s, %s)',
+            (endpoint, method, status_code, request_body, response_body)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        app.logger.error(f"Error logging request and response: {e}")
+
+# Middleware to log requests and responses
+@app.after_request
+def after_request(response):
+    endpoint = request.path
+    method = request.method
+    status_code = response.status_code
+    request_body = request.get_data(as_text=True)
+    response_body = response.get_data(as_text=True)
+    log_request_response(endpoint, method, status_code, request_body, response_body)
+    return response
+
+# User login to get a JWT token
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+    
+    # Connect to the database
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
+    user = cursor.fetchone()
+    
+    cursor.close()
+    conn.close()
+    
+    # Validate username and password
+    if user and sha256.verify(password, user['password_hash']):
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({'msg': 'Bad username or password'}), 401
 
 # Endpoint for bill inquiry request
 @app.route('/billing/api/v1/bi', methods=['POST'])
+@jwt_required()
 def bill_inquiry():
-    api_key = request.headers.get('Authorization')
-    if not validate_api_key(api_key):
-        return jsonify({'error': 'Unauthorized'}), 401
-
     data = request.get_json()
-    
-    if not data:
-        return jsonify({'error': 'Invalid JSON payload'}), 400
 
     bill_number = data.get('bill_number')
     reference_number = data.get('reference_number')
@@ -58,16 +105,10 @@ def bill_inquiry():
 
 # Endpoint for bill payment information
 @app.route('/billing/api/v1/bp', methods=['POST'])
+@jwt_required()
 def bill_payment():
-    api_key = request.headers.get('Authorization')
-    if not validate_api_key(api_key):
-        return jsonify({'error': 'Unauthorized'}), 401
-
     data = request.get_json()
     
-    if not data:
-        return jsonify({'error': 'Invalid JSON payload'}), 400
-
     bill_number = data.get('bill_number')
     reference_number = data.get('reference_number')
     service_code = data.get('service_code')
@@ -85,42 +126,6 @@ def bill_payment():
         cursor.execute(
             'INSERT INTO bill_payments (bill_number, reference_number, service_code, paid_amount, process_date, payment_type) VALUES (%s, %s, %s, %s, %s, %s)',
             (bill_number, reference_number, service_code, paid_amount, process_date, payment_type)
-        )
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except Exception as e:
-        app.logger.error(f"Error occurred: {e}")
-        return jsonify({'error': 'Internal Server Error'}), 500
-
-    return jsonify({'status': 'success'}), 201
-
-# Endpoint for bill inquiry response
-@app.route('/billing/api/v1/bi/response', methods=['POST'])
-def bill_inquiry_response():
-    api_key = request.headers.get('Authorization')
-    if not validate_api_key(api_key):
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    data = request.get_json()
-    
-    if not data:
-        return jsonify({'error': 'Invalid JSON payload'}), 400
-
-    bill_inquiry_id = data.get('bill_inquiry_id')
-    response_code = data.get('response_code')
-    response_message = data.get('response_message')
-
-    if not bill_inquiry_id or not response_code:
-        return jsonify({'error': 'bill_inquiry_id and response_code are required'}), 400
-
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            'INSERT INTO bill_inquiry_responses (bill_inquiry_id, response_code, response_message) VALUES (%s, %s, %s)',
-            (bill_inquiry_id, response_code, response_message)
         )
         conn.commit()
         cursor.close()

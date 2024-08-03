@@ -2,9 +2,10 @@
 This project provides RESTful APIs for handling bill inquiries, bill payments, and bill inquiry responses. The APIs are implemented using Flask and MySQL.
 
 ## Features
+- Login: Using JWT to produce access token
 - Bill Inquiry Request: Endpoint to submit a bill inquiry.
 - Bill Payment Information: Endpoint to submit bill payment information.
-- Bill Inquiry Response: Endpoint to submit responses to bill inquiries.
+- Logs: Save all endpoints responses to logs Table
 
 ## Requirements
 - Python 3.6+
@@ -52,14 +53,23 @@ CREATE TABLE bill_payments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE bill_inquiry_responses (
+CREATE TABLE logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    bill_inquiry_id INT NOT NULL,
-    response_code VARCHAR(255),
-    response_message TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (bill_inquiry_id) REFERENCES bill_inquiries(id)
+    endpoint VARCHAR(255) NOT NULL,
+    method VARCHAR(10) NOT NULL,
+    status_code INT NOT NULL,
+    request_body TEXT,
+    response_body TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 ~~~
 
@@ -70,16 +80,30 @@ DB_HOST=your_remote_host_address
 DB_NAME=billing
 DB_USER=your_db_user
 DB_PASSWORD=your_db_password
-API_ACCESS_KEY=your_generated_api_key
+JWT_SECRET_KEY=HS256
 ~~~
-- **NOTE: Use apitoken.py to generate an APi Key**
+
 
 ## API Endpoints
+### Login
+- Endpoint: **/login**
+- Method: **POST**
+- Headers:
+    - **Content-Type: application/json**
+-Body:
+~~~json
+{
+  "username": "admin",
+  "password": "password"
+}
+
+~~~
+
 ### Bill Inquiry Request
 - Endpoint: **/billing/api/v1/bi**
 - Method: **POST**
 - Headers:
-    - **Authorization: ApiKey YOUR_API_ACCESS_KEY**
+    - **Authorization: Bearer <access_token>**
     - **Content-Type: application/json**
 -Body:
 ~~~json
@@ -100,7 +124,7 @@ API_ACCESS_KEY=your_generated_api_key
 - Endpoint: **/billing/api/v1/bp**
 - Method: **POST**
 - Headers:
-    - **Authorization: ApiKey YOUR_API_ACCESS_KEY**
+    - **Authorization: Bearer <access_token>**
     - **Content-Type: application/json**
 -Body:
 ~~~json
@@ -120,26 +144,6 @@ API_ACCESS_KEY=your_generated_api_key
     - **401 Unauthorized** if API key is invalid
     - **500 Internal Server** Error on server error
 
-### Bill Inquiry Response
-- Endpoint: **/billing/api/v1/bi/response**
-- Method: **POST**
-- Headers:
-    - **Authorization: ApiKey YOUR_API_ACCESS_KEY**
-    - **Content-Type: application/json**
--Body:
-~~~json
-{
-  "bill_inquiry_id": 1,
-  "response_code": "200",
-  "response_message": "Bill inquiry processed successfully."
-}
-~~~
-
-- Response:
-    - **201 Created** on success
-    - **400 Bad Request** if required fields are missing
-    - **401 Unauthorized** if API key is invalid
-    - **500 Internal Server** Error on server error
 
 ## Testing the APIs
 

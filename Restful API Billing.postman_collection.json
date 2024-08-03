@@ -7,13 +7,50 @@
 	},
 	"item": [
 		{
+			"name": "http://127.0.0.1:5000/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"password\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/login",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "http://127.0.0.1:5000/billing/api/v1/bi",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "887c89ccdc5fc85472748f47a591ee88",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjcyNDA1NSwianRpIjoiNmNkY2Q0Y2MtMjBkMi00NzNiLWJiYmMtMWM3NDc2MzczM2ZjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzI0MDU1LCJjc3JmIjoiYTNlMTQ4ZjMtOGI0YS00MDcyLTk3MWMtYjg5ZWM0NTJlM2Y3IiwiZXhwIjoxNzIyODEwNDU1fQ.LN_Q9BYItDz-917cHXMID5WjVx3USFvF7UJcbnKWoqM",
 						"type": "text"
 					},
 					{
@@ -58,7 +95,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "887c89ccdc5fc85472748f47a591ee88",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjcyMzQwNywianRpIjoiMGEwYTRmNDAtYzc3ZS00ODk0LWJlZTEtNmJiNjNjNWJlMmUyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzIzNDA3LCJjc3JmIjoiNDQ3NjQxNjItZDcyNC00ZWZkLTgzZGYtZDgzZjUxYjJhY2QxIiwiZXhwIjoxNzIyNzI0MzA3fQ.IPGNDQwMeMAq-a44VcARcP0cKmtCbeVtvi0npu1eaMw",
 						"type": "text"
 					},
 					{
@@ -103,7 +140,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "887c89ccdc5fc85472748f47a591ee88",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjcyMzQwNywianRpIjoiMGEwYTRmNDAtYzc3ZS00ODk0LWJlZTEtNmJiNjNjNWJlMmUyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzIzNDA3LCJjc3JmIjoiNDQ3NjQxNjItZDcyNC00ZWZkLTgzZGYtZDgzZjUxYjJhY2QxIiwiZXhwIjoxNzIyNzI0MzA3fQ.IPGNDQwMeMAq-a44VcARcP0cKmtCbeVtvi0npu1eaMw",
 						"type": "text"
 					},
 					{
