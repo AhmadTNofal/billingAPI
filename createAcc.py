@@ -1,7 +1,7 @@
 from passlib.hash import pbkdf2_sha256 as sha256
 import mysql.connector
 # Replace these with your actual values
-username = 'test'
+username = 'admin'
 password = 'password'
 
 password_hash = sha256.hash(password)
