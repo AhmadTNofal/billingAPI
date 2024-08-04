@@ -73,68 +73,105 @@ def login():
     else:
         return jsonify({'msg': 'Bad username or password'}), 401
 
-# Endpoint for bill inquiry request
-@app.route('/billing/api/v1/bi', methods=['POST'])
+# Endpoint to check payment status
+@app.route('/checkPaymentStatus', methods=['POST'])
 @jwt_required()
-def bill_inquiry():
+def check_payment_status():
     data = request.get_json()
+    orderID = data.get('orderID')
+    billingNumber = data.get('billingNumber')
 
-    bill_number = data.get('bill_number')
-    reference_number = data.get('reference_number')
-    service_code = data.get('service_code')
-
-    if not bill_number or not service_code:
-        return jsonify({'error': 'bill_number and service_code are required'}), 400
+    if not orderID or not billingNumber:
+        return jsonify({'success': 'false', 'message': 'Order ID and Billing Number are required'}), 400
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
 
-        cursor.execute(
-            'INSERT INTO bill_inquiries (bill_number, reference_number, service_code) VALUES (%s, %s, %s)',
-            (bill_number, reference_number, service_code)
-        )
-        conn.commit()
+        cursor.execute('SELECT * FROM billing WHERE orderID = %s AND billingNumber = %s', (orderID, billingNumber))
+        billing = cursor.fetchone()
+
         cursor.close()
         conn.close()
+
+        if billing:
+            billing['success'] = 'true'
+            billing['message'] = 'successful'
+            return jsonify(billing), 200
+        else:
+            return jsonify({'success': 'false', 'message': 'Order ID or Billing Number not found'}), 404
+
     except Exception as e:
         app.logger.error(f"Error occurred: {e}")
-        return jsonify({'error': 'Internal Server Error'}), 500
+        return jsonify({'success': 'false', 'message': 'Internal Server Error'}), 500
 
-    return jsonify({'status': 'success'}), 201
-
-# Endpoint for bill payment information
-@app.route('/billing/api/v1/bp', methods=['POST'])
+# Endpoint to update payment status
+@app.route('/updatePaymentStatus', methods=['POST'])
 @jwt_required()
-def bill_payment():
+def update_payment_status():
     data = request.get_json()
-    
-    bill_number = data.get('bill_number')
-    reference_number = data.get('reference_number')
-    service_code = data.get('service_code')
-    paid_amount = data.get('paid_amount')
-    process_date = data.get('process_date')
-    payment_type = data.get('payment_type')
+    orderID = data.get('orderID')
+    billingNumber = data.get('billingNumber')
 
-    if not bill_number or not service_code or not paid_amount or not process_date or not payment_type:
-        return jsonify({'error': 'bill_number, service_code, paid_amount, process_date, and payment_type are required'}), 400
+    if not orderID or not billingNumber:
+        return jsonify({'success': 'false', 'message': 'Order ID and Billing Number are required'}), 400
 
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
 
-        cursor.execute(
-            'INSERT INTO bill_payments (bill_number, reference_number, service_code, paid_amount, process_date, payment_type) VALUES (%s, %s, %s, %s, %s, %s)',
-            (bill_number, reference_number, service_code, paid_amount, process_date, payment_type)
-        )
-        conn.commit()
-        cursor.close()
-        conn.close()
+        cursor.execute('SELECT * FROM billing WHERE orderID = %s AND billingNumber = %s', (orderID, billingNumber))
+        billing = cursor.fetchone()
+
+        if billing:
+            if billing['paymentStatus'] == 'paid':
+                return jsonify({'success': 'false', 'message': 'payment is already paid'}), 400
+
+            cursor.execute('UPDATE billing SET paymentStatus = %s WHERE orderID = %s AND billingNumber = %s',
+                           ('paid', orderID, billingNumber))
+            conn.commit()
+
+            cursor.execute('SELECT * FROM billing WHERE orderID = %s AND billingNumber = %s', (orderID, billingNumber))
+            updated_billing = cursor.fetchone()
+
+            cursor.close()
+            conn.close()
+
+            updated_billing['success'] = 'true'
+            updated_billing['message'] = 'payment is successful'
+            return jsonify(updated_billing), 200
+        else:
+            cursor.close()
+            conn.close()
+            return jsonify({'success': 'false', 'message': 'Order ID or Billing Number not found'}), 404
+
     except Exception as e:
         app.logger.error(f"Error occurred: {e}")
-        return jsonify({'error': 'Internal Server Error'}), 500
+        return jsonify({'success': 'false', 'message': 'Internal Server Error'}), 500
 
-    return jsonify({'status': 'success'}), 201
+# Endpoint to get all billing records
+@app.route('/getAllBilling', methods=['GET'])
+@jwt_required()
+def get_all_billing():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute('SELECT * FROM billing')
+        billing_records = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        for billing in billing_records:
+            billing['success'] = 'true'
+            billing['message'] = 'retrieved successfully'
+
+        return jsonify(billing_records), 200
+
+    except Exception as e:
+        app.logger.error(f"Error occurred: {e}")
+        return jsonify({'success': 'false', 'message': 'Internal Server Error'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

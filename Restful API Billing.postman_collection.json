@@ -44,13 +44,13 @@
 			"response": []
 		},
 		{
-			"name": "http://127.0.0.1:5000/billing/api/v1/bi",
+			"name": "http://127.0.0.1:5000/checkPaymentStatus",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjcyNDA1NSwianRpIjoiNmNkY2Q0Y2MtMjBkMi00NzNiLWJiYmMtMWM3NDc2MzczM2ZjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzI0MDU1LCJjc3JmIjoiYTNlMTQ4ZjMtOGI0YS00MDcyLTk3MWMtYjg5ZWM0NTJlM2Y3IiwiZXhwIjoxNzIyODEwNDU1fQ.LN_Q9BYItDz-917cHXMID5WjVx3USFvF7UJcbnKWoqM",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjc2MzYyOSwianRpIjoiMDMwYzhlNjQtZDU0My00NmIwLTkzMmEtODhiMzJkNzQ0OGIyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzYzNjI5LCJjc3JmIjoiYzkzODA4YjgtZjYwNC00ZTYyLWExZTktOTJjMjllYTY2YWY1IiwiZXhwIjoxNzIyODUwMDI5fQ.UDmtvU1ocjq7XB9HsjGCi-G2Lw6wJes6ZhdZkskl94c",
 						"type": "text"
 					},
 					{
@@ -61,7 +61,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"bill_number\": \"12345\",\r\n  \"reference_number\": \"67890\",\r\n  \"service_code\": \"155\"\r\n}\r\n",
+					"raw": "{\r\n  \"orderID\": 4499494,\r\n  \"billingNumber\": 333333\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -69,7 +69,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/billing/api/v1/bi",
+					"raw": "http://127.0.0.1:5000/checkPaymentStatus",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -79,23 +79,20 @@
 					],
 					"port": "5000",
 					"path": [
-						"billing",
-						"api",
-						"v1",
-						"bi"
+						"checkPaymentStatus"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "http://127.0.0.1:5000/billing/api/v1/bp",
+			"name": "http://127.0.0.1:5000/updatePaymentStatus",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjcyMzQwNywianRpIjoiMGEwYTRmNDAtYzc3ZS00ODk0LWJlZTEtNmJiNjNjNWJlMmUyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzIzNDA3LCJjc3JmIjoiNDQ3NjQxNjItZDcyNC00ZWZkLTgzZGYtZDgzZjUxYjJhY2QxIiwiZXhwIjoxNzIyNzI0MzA3fQ.IPGNDQwMeMAq-a44VcARcP0cKmtCbeVtvi0npu1eaMw",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjc2MzYyOSwianRpIjoiMDMwYzhlNjQtZDU0My00NmIwLTkzMmEtODhiMzJkNzQ0OGIyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzYzNjI5LCJjc3JmIjoiYzkzODA4YjgtZjYwNC00ZTYyLWExZTktOTJjMjllYTY2YWY1IiwiZXhwIjoxNzIyODUwMDI5fQ.UDmtvU1ocjq7XB9HsjGCi-G2Lw6wJes6ZhdZkskl94c",
 						"type": "text"
 					},
 					{
@@ -106,7 +103,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"bill_number\": \"12345\",\r\n  \"reference_number\": \"67890\",\r\n  \"service_code\": \"155\",\r\n  \"paid_amount\": 100.50,\r\n  \"process_date\": 1625140800,\r\n  \"payment_type\": \"F\"\r\n}\r\n",
+					"raw": "{\r\n  \"orderID\": 4499494,\r\n  \"billingNumber\": 333333\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -114,7 +111,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/billing/api/v1/bp",
+					"raw": "http://127.0.0.1:5000/updatePaymentStatus",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -124,42 +121,25 @@
 					],
 					"port": "5000",
 					"path": [
-						"billing",
-						"api",
-						"v1",
-						"bp"
+						"updatePaymentStatus"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "http://127.0.0.1:5000/billing/api/v1/bi/response",
+			"name": "http://127.0.0.1:5000/getAllBilling",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjcyMzQwNywianRpIjoiMGEwYTRmNDAtYzc3ZS00ODk0LWJlZTEtNmJiNjNjNWJlMmUyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzIzNDA3LCJjc3JmIjoiNDQ3NjQxNjItZDcyNC00ZWZkLTgzZGYtZDgzZjUxYjJhY2QxIiwiZXhwIjoxNzIyNzI0MzA3fQ.IPGNDQwMeMAq-a44VcARcP0cKmtCbeVtvi0npu1eaMw",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMjc2MzYyOSwianRpIjoiMDMwYzhlNjQtZDU0My00NmIwLTkzMmEtODhiMzJkNzQ0OGIyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIyNzYzNjI5LCJjc3JmIjoiYzkzODA4YjgtZjYwNC00ZTYyLWExZTktOTJjMjllYTY2YWY1IiwiZXhwIjoxNzIyODUwMDI5fQ.UDmtvU1ocjq7XB9HsjGCi-G2Lw6wJes6ZhdZkskl94c",
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"bill_inquiry_id\": 1,\r\n  \"response_code\": \"200\",\r\n  \"response_message\": \"Bill inquiry processed successfully.\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/billing/api/v1/bi/response",
+					"raw": "http://127.0.0.1:5000/getAllBilling",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -169,11 +149,7 @@
 					],
 					"port": "5000",
 					"path": [
-						"billing",
-						"api",
-						"v1",
-						"bi",
-						"response"
+						"getAllBilling"
 					]
 				}
 			},

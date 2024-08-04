@@ -3,8 +3,9 @@ This project provides RESTful APIs for handling bill inquiries, bill payments, a
 
 ## Features
 - Login: Using JWT to produce access token
-- Bill Inquiry Request: Endpoint to submit a bill inquiry.
-- Bill Payment Information: Endpoint to submit bill payment information.
+- Check Payment Status
+- UpdatePaymentStatus
+- Get All Billing
 - Logs: Save all endpoints responses to logs Table
 
 ## Requirements
@@ -34,23 +35,16 @@ CREATE DATABASE billing;
 
 USE billing;
 
-CREATE TABLE bill_inquiries (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    bill_number VARCHAR(255) NOT NULL,
-    reference_number VARCHAR(255),
-    service_code VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE bill_payments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    bill_number VARCHAR(255) NOT NULL,
-    reference_number VARCHAR(255),
-    service_code VARCHAR(255) NOT NULL,
-    paid_amount DECIMAL(10, 2) NOT NULL,
-    process_date BIGINT NOT NULL,
-    payment_type VARCHAR(1) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE billing (
+    customerAccountName VARCHAR(255),
+    customerID INT UNIQUE,
+    orderID INT UNIQUE,
+    billingNumber INT UNIQUE,
+    paymentAmount DECIMAL(10, 2),
+    currency ENUM('USD', 'IQD'),
+    description TEXT,
+    paymentStatus ENUM('paid', 'unpaid'),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE logs (
@@ -96,53 +90,107 @@ JWT_SECRET_KEY=HS256
   "username": "admin",
   "password": "password"
 }
-
 ~~~
-
-### Bill Inquiry Request
-- Endpoint: **/billing/api/v1/bi**
-- Method: **POST**
-- Headers:
-    - **Authorization: Bearer <access_token>**
-    - **Content-Type: application/json**
--Body:
+- Response:
 ~~~json
 {
-  "bill_number": "12345",
-  "reference_number": "67890",
-  "service_code": "155"
+    "access_token": "<Token>"
 }
 ~~~
 
-- Response:
-    - **201 Created** on success
-    - **400 Bad Request** if required fields are missing
-    - **401 Unauthorized** if API key is invalid
-    - **500 Internal Server** Error on server error
-
-### Bill Payment Information
-- Endpoint: **/billing/api/v1/bp**
+### Check Payment Status
+- Endpoint: **/checkPaymentStatus**
 - Method: **POST**
 - Headers:
-    - **Authorization: Bearer <access_token>**
+    - **Authorization: Bearer <token>**
     - **Content-Type: application/json**
 -Body:
 ~~~json
+     {
+       "orderID": 4499494,
+       "billingNumber": 333333
+     }
+~~~
+- Response:
+~~~json
 {
-  "bill_number": "12345",
-  "reference_number": "67890",
-  "service_code": "155",
-  "paid_amount": 100.50,
-  "process_date": 1625140800,
-  "payment_type": "F"
+    "billingNumber": 333333,
+    "createdAt": "Sun, 04 Aug 2024 12:23:11 GMT",
+    "currency": "IQD",
+    "customerAccountName": "Ahmed Rahman",
+    "customerID": 73737373,
+    "description": "test",
+    "message": "successful",
+    "orderID": 4499494,
+    "paymentAmount": "50000.00",
+    "paymentStatus": "unpaid",
+    "success": "true"
 }
 ~~~
 
+### Update Payment Status
+- Endpoint: **/updatePaymentStatus**
+- Method: **POST**
+- Headers:
+    - **Authorization: Bearer <token>**
+    - **Content-Type: application/json**
+- Body:
+~~~json
+     {
+       "orderID": 4499494,
+       "billingNumber": 333333
+     }
+~~~
 - Response:
-    - **201 Created** on success
-    - **400 Bad Request** if required fields are missing
-    - **401 Unauthorized** if API key is invalid
-    - **500 Internal Server** Error on server error
+~~~json
+{
+    "billingNumber": 333333,
+    "createdAt": "Sun, 04 Aug 2024 12:23:11 GMT",
+    "currency": "IQD",
+    "customerAccountName": "Ahmed Rahman",
+    "customerID": 73737373,
+    "description": "test",
+    "message": "payment is successful",
+    "orderID": 4499494,
+    "paymentAmount": "50000.00",
+    "paymentStatus": "paid",
+    "success": "true"
+}
+~~~
+
+
+### Get All Billing
+- Endpoint: **/getAllBilling**
+- Method: **GET**
+- Headers:
+    - **Authorization: Bearer <token>**
+    - **Content-Type: application/json**
+- Body
+~~~json
+~~~
+- Response
+~~~json
+     [
+       {
+         "success": "true",
+         "message": "payment is successful",
+         "orderID": "4499494",
+         "billingNumber": "333333",
+         "paymentAmount": 50000,
+         "currency": "IQD",
+         "paymentStatus": "unpaid"
+       },
+       {
+         "success": "true",
+         "message": "payment is successful",
+         "orderID": "4499495",
+         "billingNumber": "333334",
+         "paymentAmount": 75000,
+         "currency": "USD",
+         "paymentStatus": "paid"
+       }
+     ]
+~~~
 
 
 ## Testing the APIs
@@ -152,7 +200,7 @@ You can use a tool like Postman to test the APIs. Follow these steps for each en
 2. Set the request method to **POST**.
 3. Enter the URL for the endpoint.
 4. Add the required headers:
-    - **Authorization: ApiKey YOUR_API_ACCESS_KEY**
+    - **Authorization: Bearer YOUR_API_ACCESS_KEY**
     - **Content-Type: application/json**
 5. Add the JSON body according to the endpoint specifications.
 6. Send the request and check the response.
@@ -160,7 +208,7 @@ You can use a tool like Postman to test the APIs. Follow these steps for each en
 ## Example: Testing Bill Inquiry Request API
 - URL: **http://localhost:5000/billing/api/v1/bi**
 - Headers:
-    - **Authorization: ApiKey YOUR_API_ACCESS_KEY**
+    - **Authorization: Bearer YOUR_API_ACCESS_KEY**
     - **Content-Type: application/json**
 - Body:
 ~~~json
